@@ -3,6 +3,7 @@ var i;
 
 var category = "accessories";
 var item_name = "Tagless Tees";
+var item_color = "Black";
 var item_size = "Medium";
 
 var fullName = "Jens Rosseau";
@@ -27,7 +28,7 @@ function fillCheckOut() {
     document.getElementsByClassName("iCheck-helper")[1].click();
     var timeEnd = new Date;
     localStorage.setItem("endTime", timeEnd.getSeconds());
-    setTimeout(document.getElementsByName("commit")[0].click(), 2000);
+    setTimeout(document.getElementsByName("commit")[0].click(), 2100);
 }
 
 function pickCategory() {
@@ -40,15 +41,16 @@ function pickCategory() {
 
 function pickItem() {
     chrome.storage.sync.get('item_name', function (data) {
-        var items = document.getElementsByClassName('name-link');
+        var items = document.getElementsByClassName('inner-article');
 
         for (i = 0; i < items.length; i++) {
             console.log(items[i].innerHTML);
-            console.log("gets here");
-            if ((items[i].innerHTML).includes(item_name)) {
-                localStorage.setItem("itemUrl", items[i].href);
-                chrome.runtime.sendMessage({ redirect: items[i].href });
-                cartItem(items[i].href);
+            if ((items[i].innerHTML).includes(item_name) && (items[i].innerHTML).includes(item_color)) {
+                console.log(items[i].getElementsByClassName("name-link")[0].href);
+                var itemUrl =items[i].getElementsByClassName("name-link")[0].href;
+                localStorage.setItem("itemUrl", itemUrl);
+                chrome.runtime.sendMessage({ redirect: itemUrl });
+                cartItem(itemUrl);
                 break;
             }
         }
@@ -56,19 +58,18 @@ function pickItem() {
 }
 
 function cartItem() {
-    // document.getElementById("size").innerHTML;
-    var options = document.getElementById("size").options;
+    chrome.storage.sync.get('item_size', function (data) { 
+        var options = document.getElementById("size").options;
 
-    for (i = 0; i < options.length; i++) {
-        console.log(options[i]);
-        if ((options[i].innerHTML).includes(item_size)) {
-            document.getElementById("size").value = options[i].value;
-            document.getElementsByName("commit")[0].click();
-            setTimeout(redirectToCheckOut, 2200);
+        for (i = 0; i < options.length; i++) {
+            console.log(options[i]);
+            if ((options[i].innerHTML).includes(item_size) && !(options[i].innerHTML).includes("XLarge") ) {
+                document.getElementById("size").value = options[i].value;
+                document.getElementsByName("commit")[0].click();
+                setTimeout(redirectToCheckOut, 2200);
+            }
         }
-    }
-
-
+    });
 }
 
 function redirectToCheckOut() {
