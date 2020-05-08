@@ -4,6 +4,7 @@
   "name": "Supreme bot",
   "description": "Simple supreme bot",
   "version": "1.0",
+  "options_page": "configuration.html",
 
   "background": {
     "scripts": ["background.js"]
