@@ -1,8 +1,9 @@
 var url = window.location.href;
 var i;
 
-var category = "shorts";
-var item_name = "Overdyed "
+var category = "accessories";
+var item_name = "Tagless Tees";
+var item_size = "Medium";
 
 var fullName = "Jens Rosseau";
 var email = "jens.rosseau@gmail.com";
@@ -24,7 +25,9 @@ function fillCheckOut() {
     document.getElementById("order_billing_country").value = countryCode;
     document.getElementById("credit_card_type").value = paymentOption;
     document.getElementsByClassName("iCheck-helper")[1].click();
-    setTimeout(document.getElementsByName("commit")[0].click(), 1500);
+    var timeEnd = new Date;
+    localStorage.setItem("endTime", timeEnd.getSeconds());
+    setTimeout(document.getElementsByName("commit")[0].click(), 2000);
 }
 
 function pickCategory() {
@@ -52,18 +55,29 @@ function pickItem() {
     });
 }
 
-function cartItem(){
-    //document.getElementById("size").value = "Medium";
-    document.getElementsByName("commit")[0].click();
-    setTimeout(redirectToCheckOut, 2100);
-    
+function cartItem() {
+    // document.getElementById("size").innerHTML;
+    var options = document.getElementById("size").options;
+
+    for (i = 0; i < options.length; i++) {
+        console.log(options[i]);
+        if ((options[i].innerHTML).includes(item_size)) {
+            document.getElementById("size").value = options[i].value;
+            document.getElementsByName("commit")[0].click();
+            setTimeout(redirectToCheckOut, 2200);
+        }
+    }
+
+
 }
 
 function redirectToCheckOut() {
-    chrome.runtime.sendMessage({ redirect: "https://www.supremenewyork.com/checkout"});
+    chrome.runtime.sendMessage({ redirect: "https://www.supremenewyork.com/checkout" });
 }
 
 if (url == "https://www.supremenewyork.com/shop/all") {
+    var timeStart = new Date;
+    localStorage.setItem("startTime", timeStart.getSeconds());
     pickCategory();
 }
 
@@ -75,11 +89,12 @@ if (url == "https://www.supremenewyork.com/checkout") {
     fillCheckOut();
 }
 
-if(url.indexOf("https://www.paypal.com/") > -1) {
+if (url.indexOf("https://www.paypal.com/") > -1) {
     console.log("paypal test");
+
 }
 
-if(url == localStorage.getItem("itemUrl")) {
+if (url == localStorage.getItem("itemUrl")) {
     cartItem();
 }
 
